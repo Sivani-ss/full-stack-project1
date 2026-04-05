@@ -1,0 +1,15 @@
+{
+  "name": "ecoissue-campus-hub",
+  "version": "1.0.0",
+  "description": "Sustainable Campus Decision Support System - Report and manage environmental issues",
+  "private": true,
+  "scripts": {
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

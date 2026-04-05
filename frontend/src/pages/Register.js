@@ -1,0 +1,66 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { authAPI } from '../api';
+
+export default function Register() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await authAPI.register(email, password, name);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || data.errors?.[0]?.msg || 'Registration failed');
+      login(data.token);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="row justify-content-center">
+      <div className="col-md-5">
+        <div className="card shadow">
+          <div className="card-body p-4">
+            <h3 className="card-title text-success mb-4">Register for EcoIssue Campus Hub</h3>
+            {error && <div className="alert alert-danger">{error}</div>}
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label">Name</label>
+                <input type="text" className="form-control" value={name} onChange={e => setName(e.target.value)} required />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Email</label>
+                <input type="email" className="form-control" value={email} onChange={e => setEmail(e.target.value)} required />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Password (min 6 characters)</label>
+                <input type="password" className="form-control" value={password} onChange={e => setPassword(e.target.value)} required />
+              </div>
+              <button type="submit" className="btn btn-success w-100" disabled={loading}>
+                {loading ? 'Registering...' : 'Register'}
+              </button>
+            </form>
+            <p className="mt-3 mb-0 text-muted small">Already have an account? <Link to="/login">Login</Link></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

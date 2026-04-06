@@ -11,9 +11,22 @@ const adminRoutes = require('./routes/admin');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true })); app.use(express.json());
+// Middleware
+const allowedOrigins = [
+  'http://localhost:3000',
+  process.env.FRONTEND_URL // e.g. https://full-stack-project1-eight.vercel.app
+].filter(Boolean);
 
+app.use(cors({
+  origin: (origin, cb) => {
+    // allow non-browser tools/no-origin + allowed browser origins
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    return cb(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));
+
+app.use(express.json());
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecoissue_campus')
   .then(() => console.log('MongoDB connected'))

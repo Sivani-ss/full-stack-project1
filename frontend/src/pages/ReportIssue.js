@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { issuesAPI } from '../api';
+import { issuesAPI, parseJsonFromResponse } from '../api';
 
 const ISSUE_TYPES = ['Water Leakage', 'Energy Misuse', 'Waste Overflow', 'Other'];
 
@@ -20,7 +20,7 @@ export default function ReportIssue() {
     setLoading(true);
     try {
       const res = await issuesAPI.create({ location, issueType, description });
-      const data = await res.json();
+      const data = await parseJsonFromResponse(res);
       if (!res.ok) throw new Error(data.message || data.errors?.[0]?.msg || 'Failed to report');
       setSuccess(data.message);
       if (data.recommendation) {

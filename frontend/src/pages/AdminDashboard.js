@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { adminAPI } from '../api';
+import { adminAPI, parseJsonFromResponse } from '../api';
 
 const STATUS_OPTIONS = ['Pending', 'In Progress', 'Solved'];
 const STATUS_BADGE = {
@@ -18,7 +18,7 @@ export default function AdminDashboard() {
   const loadIssues = async () => {
     try {
       const res = await adminAPI.issues(filter);
-      const data = await res.json();
+      const data = await parseJsonFromResponse(res);
       setIssues(Array.isArray(data) ? data : []);
     } catch {
       setIssues([]);
@@ -28,7 +28,7 @@ export default function AdminDashboard() {
   const loadAnalytics = async () => {
     try {
       const res = await adminAPI.analytics();
-      const data = await res.json();
+      const data = await parseJsonFromResponse(res);
       setAnalytics(data);
     } catch {
       setAnalytics(null);

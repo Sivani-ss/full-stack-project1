@@ -1,4 +1,24 @@
-const API_BASE = '/api';
+// Local dev: use package.json "proxy" with '/api'. Production: set REACT_APP_API_URL on Vercel (e.g. https://your-api.onrender.com, no trailing slash).
+export const API_BASE = process.env.REACT_APP_API_URL
+  ? `${String(process.env.REACT_APP_API_URL).replace(/\/$/, '')}/api`
+  : '/api';
+
+/** Use after fetch() — avoids "Unexpected end of JSON input" when the server returns HTML or an empty body. */
+export async function parseJsonFromResponse(res) {
+  const text = await res.text();
+  if (!text.trim()) {
+    throw new Error(
+      `Empty response (HTTP ${res.status}). On Vercel: add Environment Variable REACT_APP_API_URL = your Render URL, then redeploy. Test Render: /api/health`
+    );
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error(
+      `Server did not return JSON (HTTP ${res.status}). Often the app calls the wrong host — set REACT_APP_API_URL and redeploy, or wake your Render service.`
+    );
+  }
+}
 
 function getHeaders() {
   const token = localStorage.getItem('token');

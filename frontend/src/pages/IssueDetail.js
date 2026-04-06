@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { issuesAPI } from '../api';
+import { issuesAPI, parseJsonFromResponse } from '../api';
 
 const STATUS_BADGE = {
   Pending: 'bg-warning text-dark',
@@ -16,12 +16,12 @@ export default function IssueDetail() {
 
   useEffect(() => {
     issuesAPI.get(id)
-      .then(res => res.json())
+      .then(async (res) => parseJsonFromResponse(res))
       .then(data => {
         if (data._id) setIssue(data);
         else setError(data.message || 'Issue not found');
       })
-      .catch(() => setError('Failed to load'))
+      .catch((err) => setError(err.message || 'Failed to load'))
       .finally(() => setLoading(false));
   }, [id]);
 

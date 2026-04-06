@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { API_BASE, parseJsonFromResponse } from '../api';
 
 const AuthContext = createContext();
 
@@ -16,11 +17,11 @@ export function AuthProvider({ children }) {
   const fetchUser = async () => {
     if (!token) { setLoading(false); return; }
     try {
-      const res = await fetch('/api/auth/me', {
+      const res = await fetch(`${API_BASE}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
-        const data = await res.json();
+        const data = await parseJsonFromResponse(res);
         setUser(data.user);
       } else {
         localStorage.removeItem('token');

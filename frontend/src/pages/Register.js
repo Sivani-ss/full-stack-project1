@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { authAPI } from '../api';
+import { authAPI, parseJsonFromResponse } from '../api';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -22,7 +22,7 @@ export default function Register() {
     setLoading(true);
     try {
       const res = await authAPI.register(email, password, name);
-      const data = await res.json();
+      const data = await parseJsonFromResponse(res);
       if (!res.ok) throw new Error(data.message || data.errors?.[0]?.msg || 'Registration failed');
       login(data.token);
       navigate('/dashboard');

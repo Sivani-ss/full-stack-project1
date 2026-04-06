@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { authAPI } from '../api';
+import { authAPI, parseJsonFromResponse } from '../api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -17,7 +17,7 @@ export default function Login() {
     setLoading(true);
     try {
       const res = await authAPI.login(email, password);
-      const data = await res.json();
+      const data = await parseJsonFromResponse(res);
       if (!res.ok) throw new Error(data.message || 'Login failed');
       login(data.token);
       navigate(data.user.role === 'admin' ? '/admin' : '/dashboard');
